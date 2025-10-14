@@ -1,0 +1,99 @@
+.container-register-user {
+    width: 100%;
+    border: .5px solid #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, .7);
+    border-radius: 8px;
+    max-width: 800px;
+}
+
+.logo-img {
+    border: 0.25px solid transparent;
+    border-radius: 30%;
+    box-shadow: 0 0px 5px rgb(0 0 0 / 49%);
+}
+
+main {
+    background: none !important;
+    border: 0.25px solid transparent !important;
+    border-radius: none !important;
+}
+
+@media(min-width: 930px) {
+    .logo-img {
+        max-width: 25%;
+    }
+}
+
+.upload-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Botón principal */
+.button.insert-image-user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: linear-gradient(165deg, #39bc79, #2daddb);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0px 5px rgb(0 0 0 / 49%);
+}
+
+/* Hover y foco */
+.button.insert-image-user:hover,
+.button.insert-image-user:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 0px 5px rgb(0 0 0 / 49%);
+    background: linear-gradient(165deg, #39bc79, #2daddb);
+}
+
+/* Ícono */
+.icon-form {
+    width: 28px;
+    height: 28px;
+    
+    transition: transform 0.3s ease;
+}
+
+.button.insert-image-user:hover .icon-form {
+    transform: scale(1.1);
+}
+
+/* Etiqueta */
+.button.insert-image-user label {
+    margin: 0;
+    cursor: pointer;
+    color: white;
+}
+
+/* Vista previa */
+.preview-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #39cdcb;
+    display: none;
+    background-color: #f8f9fa;
+    box-shadow: 0 0px 5px rgb(0 0 0 / 49%);
+}
+
+.preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+ .preview-container img{
+    max-width: 180px; height: auto; border-radius: 12px; display: block;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  }

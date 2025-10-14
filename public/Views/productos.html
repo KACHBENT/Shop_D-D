@@ -1,0 +1,52 @@
+<section class="container my-4" id="productos-page">
+  <!-- Filtros -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body">
+      <form id="filters" class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Buscar</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="../Image/Icons/search.svg" width="16" height="16" alt="">
+            </span>
+            <input id="q" type="search" class="form-control" placeholder="Nombre / descripción">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Categoría</label>
+          <select id="category" class="form-select">
+            <option value="">Todas</option>
+            <option value="figura">Figura</option>
+            <option value="tablero">Tablero</option>
+            <option value="historias">Historias Extendidas</option>
+            <option value="dados">Dados</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Precio mín.</label>
+          <input id="minPrice" type="number" min="0" step="0.01" class="form-control" placeholder="0.00">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Precio máx.</label>
+          <input id="maxPrice" type="number" min="0" step="0.01" class="form-control" placeholder="9999.00">
+        </div>
+
+        <div class="col-md-1 d-grid">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Grid de productos -->
+  <div id="grid" class="row g-3"></div>
+
+  <!-- Estado vacío / errores -->
+  <div id="state" class="text-center text-muted py-5 d-none">
+    <img src="../Image/Icons/inventory2.svg" width="42" height="42" alt="" class="mb-2 opacity-75">
+    <p class="mb-0">No se encontraron productos con los filtros aplicados.</p>
+  </div>
+</section>

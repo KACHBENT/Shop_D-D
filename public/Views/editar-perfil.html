@@ -1,0 +1,122 @@
+<section class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <!-- Header -->
+        <div class="card-header linea-contenedor bg-white d-flex align-items-center gap-2">
+          <img src="./Image/Icons/useradd.svg" class="icon-head" alt="Logo" width="28" height="28">
+          <h5 class="mb-0">Registro de usuario</h5>
+        </div>
+
+        <div class="card-body">
+          <form id="form" novalidate>
+            <div class="row g-4">
+              <!-- Col izquierda: Avatar -->
+              <div class="col-md-4">
+                <div class="d-flex flex-column align-items-center gap-3">
+                  <div id="preview" class="preview-container" style="display:none;">
+                    <!-- La imagen de vista previa se inyecta por TS -->
+                  </div>
+
+                  <input type="file" id="insert-image-user" accept="image/*" hidden>
+
+                  <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 insert-image-user"
+                          onclick="document.getElementById('insert-image-user').click()">
+                    <img src="./Image/Icons/add_image.svg" class="icon-form darken" alt="subir" width="20" height="20">
+                    <span>Sube tu icono</span>
+                  </button>
+
+                  <small class="text-muted text-center">
+                    Formatos: JPG, PNG, WEBP · Máx. 5&nbsp;MB
+                  </small>
+                </div>
+              </div>
+
+              <!-- Col derecha: Campos -->
+              <div class="col-md-8">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/person_pin.svg" class="icon-form darken" alt="" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="name" class="form-control" type="text" placeholder="Nombre" required>
+                        <label for="name">Nombre</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/person_pin.svg" class="icon-form darken" alt="" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="fatherlastname" class="form-control" type="text" placeholder="Apellido paterno" required>
+                        <label for="fatherlastname">Apellido paterno</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/person_pin.svg" alt="" class="icon-form darken" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="motherlastname" class="form-control" type="text" placeholder="Apellido materno" required>
+                        <label for="motherlastname">Apellido materno</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/contact_mail.svg" class="icon-form darken" alt="" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="email" class="form-control" type="email" placeholder="Correo" required>
+                        <label for="email">Correo</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/account_box.svg" class="icon-form darken" alt="" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="username" class="form-control" type="text" placeholder="Usuario" required>
+                        <label for="username">Usuario</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <img src="./Image/Icons/password.svg" class="icon-form darken" alt="" width="18" height="18">
+                      </span>
+                      <div class="form-floating flex-grow-1">
+                        <input id="password" class="form-control" type="password" placeholder="Contraseña" required>
+                        <label for="password">Contraseña</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary w-100 py-2">Guardar cambios</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

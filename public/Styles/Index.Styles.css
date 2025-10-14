@@ -1,0 +1,465 @@
+:root {
+    --bg: #0f172a;
+    --panel: #111827;
+    --text: #e5e7eb;
+    --border: #1f2937;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Contenedor principal para SPA */
+main {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+/* Fondo con overlay oscuro (mejor stacking) */
+.fondo {
+    position: relative;
+}
+
+.fondo::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url('../Image/backfond-2.webp');
+    background-size: cover;
+    background-position: center;
+    transform: translateZ(0);
+    z-index: -2;
+}
+
+.fondo::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    z-index: -1;
+}
+
+/* Navbar ajustes de enlaces */
+.navbar .nav-link {
+    color: #ff8a00 !important;
+}
+
+.navbar .nav-link:hover {
+    color: #ff4d4d !important;
+    text-shadow: 0 0 10px rgba(255, 159, 4, .68) !important;
+}
+
+/* Grilla de productos 100% responsive */
+.productos {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.producto.card {
+    background: #f0f0f0;
+    border: 0;
+}
+
+.producto .card-body {
+    color: #111;
+}
+
+/* Utilidades de iconos con tamaños fluidos */
+.icon-dyd {
+    border: 1.5px solid rgba(128, 128, 128, 0.357);
+    border-radius: 50%;
+}
+
+.icon-head {
+    width: clamp(28px, 4vw, 32px);
+    height: clamp(28px, 4vw, 32px);
+    background-color: rgba(0, 0, 0, 0.68);
+    border-radius: 50%;
+    padding: 1.5px;
+}
+
+.icon-login {
+    width: clamp(72px, 12vw, 100px);
+    height: clamp(72px, 12vw, 100px);
+    background-color: rgba(0, 0, 0, .68);
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.icon-action {
+    width: 25px;
+    height: auto;
+}
+
+.icon-action2 {
+    width: 12px;
+    height: auto;
+}
+
+/* Tarjetas de contacto/diccionario: ancho fluido */
+.container-contact,
+.container-dictonary-contact {
+    width: 100%;
+    max-width: 420px;
+    border: .5px solid #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, .7);
+    border-radius: 8px;
+}
+
+/* Scroll horizontal de tarjetas */
+.contact-scroll-x {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px;
+    max-width: 100%;
+    scroll-behavior: smooth;
+    border: 1px solid #888;
+}
+
+.contact-scroll-x>.card {
+    flex: 0 0 auto;
+    min-width: 260px;
+    max-width: 320px;
+}
+
+.contact-scroll-x::-webkit-scrollbar {
+    height: 8px;
+}
+
+.contact-scroll-x::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.contact-scroll-x::-webkit-scrollbar-track {
+    background: #ddd;
+}
+
+/* Línea decorativa inferior */
+.linea-contenedor {
+    position: relative;
+}
+
+.linea-contenedor::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, rgb(80, 191, 211), rgb(34, 170, 34));
+}
+
+/* Botones personalizados (sobre Bootstrap) */
+.btn-outline-light {
+    color: #7a7777 !important;
+    border-color: #858383 !important;
+}
+
+.btn-outline-light:hover {
+    color: #fff !important;
+    background-color: #ea1f34 !important;
+    border-color: #81171c !important;
+    box-shadow: 0 0 10px rgba(198, 43, 43, .37);
+}
+
+.btn-secondary {
+    color: #fff !important;
+    border-color: #21ae55 !important;
+    background-color: #45d576 !important;
+}
+
+.btn-secondary:hover {
+    background-color: #3baa57 !important;
+    border-color: #239b45 !important;
+    box-shadow: 0 0 10px rgba(18, 177, 34, .32);
+}
+
+/* Inputs accesibles en dark */
+.form-control,
+.form-select {
+    padding: .6rem 1rem !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none !important;
+    border-color: rgb(68, 202, 68) !important;
+    box-shadow: 0 0 0 .25rem rgba(62, 232, 90, .25) !important;
+}
+
+.form-check-input:checked {
+    background-color: rgb(68, 202, 68) !important;
+    border-color: rgb(68, 202, 68) !important;
+}
+
+.form-check-input:focus {
+    outline: none;
+    border-color: rgb(68, 202, 68) !important;
+    box-shadow: 0 0 0 .25rem rgba(62, 232, 90, .25) !important;
+}
+
+label,
+h5,
+p,
+strong,
+small {
+    color: inherit;
+}
+
+.footer {
+    background-color: #000;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+/* Utilidades de filtros */
+.grayscale {
+    filter: grayscale(100%);
+}
+
+.invert {
+    filter: invert(100%);
+}
+
+.sepia {
+    filter: sepia(100%);
+}
+
+.saturate {
+    filter: saturate(5);
+}
+
+.darken {
+    filter: brightness(25%);
+}
+
+.darken:hover {
+    filter: contrast(200%);
+}
+
+.lighten {
+    filter: brightness(150%);
+}
+
+.high-contrast {
+    filter: contrast(200%);
+}
+
+.red {
+    filter: hue-rotate(0deg) saturate(500%) brightness(90%);
+}
+
+.green {
+    filter: hue-rotate(90deg) saturate(500%) brightness(90%);
+}
+
+.blue {
+    filter: hue-rotate(200deg) saturate(500%) brightness(90%);
+}
+
+.pink {
+    filter: hue-rotate(300deg) saturate(500%) brightness(95%);
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+    .navbar .btn {
+        padding: .5rem .75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .imagen-person {
+        height: 18vh;
+        width: auto;
+    }
+
+    .btn-sm {
+        height: 40px;
+        margin-top: 0;
+    }
+
+    .label-text {
+        font-size: .8rem;
+        text-align: center;
+        margin-bottom: .25rem;
+    }
+}
+
+
+
+.contact-scroll-x {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 12px;
+  max-width: 100%;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  border: 1px solid #888;
+}
+
+.contact-scroll-x>.card {
+  flex: 0 0 auto;
+  min-width: 260px;
+  max-width: 320px;
+  margin: 0;
+}
+
+.contact-scroll-x .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.contact-scroll-x::-webkit-scrollbar {
+  height: 8px;
+}
+
+.contact-scroll-x::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 4px;
+}
+
+.contact-scroll-x::-webkit-scrollbar-track {
+  background: #ddd;
+}
+
+
+/*
+    ! Codigo Esencial para proyecto de tesis y de Zein
+    Todo Estilos de inputs extends
+*/
+
+/* Estilo cuando el input está enfocado */
+.form-control:focus,
+.form-select:focus {
+    outline: none !important;
+    border-color: rgb(68, 202, 68) !important;
+    box-shadow: none !important; /* quitamos el shadow aquí */
+}
+
+/* Aplica el shadow verde al contenedor completo */
+.input-group:focus-within {
+    border: 1px solid rgb(68, 202, 68);
+    box-shadow: 0 0 0 .25rem rgba(62, 232, 90, .25);
+    border-radius: .5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Aseguramos que no haya conflicto visual */
+.input-group .form-control,
+.input-group .input-group-text {
+    border: none;
+}
+
+.input-group:focus-within .input-group-text {
+    background-color: rgba(62, 232, 90, 0.1);
+    transition: background-color 0.3s;
+}
+
+
+.href-custom{
+    font-size: smaller;
+    text-decoration: none;
+    color: rgb(205, 146, 37);
+}
+
+.href-custom:hover{
+    font-size: smaller;
+     color: #ff4d4d !important;
+    text-shadow: 0 0 10px rgba(255, 159, 4, .68) !important;
+}
+
+.navbar {
+  background: linear-gradient(90deg, #141414, #1f1f1f);
+}
+
+.navbar .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #ff8d4f;
+}
+
+.navbar .dropdown-toggle img {
+  border: 2px solid #ffffff33;
+  transition: 0.3s ease;
+}
+
+.navbar .dropdown-toggle img:hover {
+  border-color: #d75717;
+}
+
+.dropdown-menu {
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.form-control, .form-select {
+    padding: 2rem 1rem !important;
+}
+
+.form-select {
+    padding: 1.08rem 1rem !important;
+}
+.shadow-lg-words{
+    /* borde oscuro cercano + halo suave */
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.45),
+    0 2px 4px rgba(0,0,0,.35),
+    0 6px 12px rgba(0,0,0,.25);
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px; /* ancho máximo en pantallas grandes */
+  margin: 0 auto; /* centra horizontalmente */
+  aspect-ratio: 16 / 9; /* mantiene proporción de video */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.video-container iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border: none;
+  border-radius: 12px;
+}
+
+/* Opcional: mejora de margen en móviles */
+@media (max-width: 768px) {
+  .video-container {
+    max-width: 100%;
+  }
+}

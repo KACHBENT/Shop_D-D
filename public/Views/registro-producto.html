@@ -1,0 +1,120 @@
+<section class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <!-- Header -->
+                <div class="card-header linea-contenedor bg-white d-flex align-items-center gap-2">
+                    <img src="../Image/Icons/inventory2.svg" class="icon-head" alt="Logo" width="28" height="28" />
+                    <h5 class="mb-0">Registro de productos</h5>
+                </div>
+
+                <div class="card-body">
+                    <form id="form" novalidate>
+                        <div class="row g-4">
+                            <!-- Col izquierda: Imagen -->
+                            <div class="col-md-4">
+                                <div class="d-flex flex-column align-items-center gap-3">
+                                    <div id="preview" class="preview-container" style="display:none;">
+                                        <!-- preview inyectado por JS -->
+                                    </div>
+
+                                    <input type="file" id="insert-image-product" accept="image/*" hidden />
+                                    <button type="button"
+                                        class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 insert-image-product"
+                                        onclick="document.getElementById('insert-image-product').click()">
+                                        <img src="./Image/Icons/add_image.svg" class="icon-form darken" alt="subir"
+                                            width="20" height="20" />
+                                        <span>Sube la imagen</span>
+                                    </button>
+
+                                    <small class="text-muted text-center">
+                                        Formatos: JPG, PNG, WEBP · Máx. 5&nbsp;MB (opcional)
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Col derecha: Campos -->
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <!-- Nombre -->
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <img src="../Image/Icons/inventory.svg" class="icon-form darken" alt=""
+                                                    width="18" height="18" />
+                                            </span>
+                                            <div class="form-floating flex-grow-1">
+                                                <input id="name" class="form-control" type="text"
+                                                    placeholder="Nombre del producto" required />
+                                                <label for="name">Nombre del producto</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Precio -->
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <img src="./Image/Icons/attach_money.svg" class="icon-form darken"
+                                                    alt="" width="18" height="18" />
+                                            </span>
+                                            <div class="form-floating flex-grow-1">
+                                                <input id="price" class="form-control" type="number" min="0" step="0.01"
+                                                    placeholder="Precio" required />
+                                                <label for="price">Precio</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Stock -->
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <img src="./Image/Icons/inventory2.svg" class="icon-form darken" alt=""
+                                                    width="18" height="18" />
+                                            </span>
+                                            <div class="form-floating flex-grow-1">
+                                                <input id="stock" class="form-control" type="number" min="0" step="1"
+                                                    placeholder="Stock" required />
+                                                <label for="stock">Stock</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Categoría / Tipo -->
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <img src="./Image/Icons/inventory2.svg" class="icon-form darken" alt=""
+                                                    width="18" height="18" />
+                                            </span>
+                                            <select id="category" class="form-select" required>
+                                                <option value="" selected disabled>Selecciona un tipo</option>
+                                                <option value="figura">Figura</option>
+                                                <option value="tablero">Tablero</option>
+                                                <option value="historias">Historias Extendidas</option>
+                                                <option value="dados">Dados</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Descripción -->
+                                    <div class="col-12 mt-2">
+                                        <textarea id="description" class="form-control" placeholder="Descripción"
+                                            style="height: 80px"></textarea>
+                                    </div>
+
+                                    <div class="col-12 mt-2">
+                                        <button type="submit" class="btn btn-primary w-100 py-2">Guardar
+                                            producto</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Col derecha -->
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

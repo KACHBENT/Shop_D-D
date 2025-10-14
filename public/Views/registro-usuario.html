@@ -1,0 +1,127 @@
+<section class="justify-content-center align-items-center mt-2 mb-2 d-flex flex-column">
+    <div class="card container-register-user mb-4 ">
+        <div class="card-header linea-contenedor bg-white d-flex text-center gap-2">
+            <img src="./Image/Icons/useradd.svg" class="icon-head" alt="Logo" class="logo">
+            <h4 class="card-title title text-center"><span>Registro de usuario</span></h4>
+        </div>
+        <form id="form">
+            <div class="card-body bg-white">
+                <article class="align-items-center">
+                    <div class="container-fluid mb-2">
+                        <div class="container mb-lg-4">
+                            <center>
+                                <img src="https://i.pinimg.com/736x/db/5c/32/db5c327c0494a39973fe5931e4d26eb6.jpg"
+                                    alt="Logo" class="img-fluid logo-img">
+                            </center>
+                        </div>
+                        <div class="container mb-2">
+                            <h4 class="text-center">¡Bienvenido aventurero! ¡Realiza el registro ya!</h4>
+                        </div>
+                        <div class="upload-icon-container">
+                            <input type="file" id="insert-image-user" accept="image/*" hidden>
+                            <button type="button" class="button insert-image-user"
+                                onclick="document.getElementById('insert-image-user').click()">
+                                <img src="./Image/Icons/add_image.svg" alt="insert-image-user" class="icon-form"
+                                    loading="lazy" />
+                                <label for="insert-image-user">Sube tu icono de usuario</label>
+                            </button>
+                            <div class="preview-container" id="preview"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/person_pin.svg" alt="name" class="icon-form darken"
+                                            loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="name"
+                                            required />
+                                        <label for="username">Nombre</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/person_pin.svg" alt="fatherlastname"
+                                            class="icon-form darken" loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="text" class="form-control" id="fatherlastname"
+                                            name="fatherlastname" placeholder="fatherlastname" required />
+                                        <label for="fatherlastname">Apellido Paterno</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/person_pin.svg" alt="motherlastname"
+                                            class="icon-form darken" loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="text" class="form-control" id="motherlastname"
+                                            name="motherlastname" placeholder="motherlastname" required />
+                                        <label for="motherlastname">Apellido Materno</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/contact_mail.svg" alt="email" class="icon-form darken"
+                                            loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="email" required />
+                                        <label for="email">Correo Electrónico</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/account_box.svg" alt="Id_homework"
+                                            class="icon-form darken" loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="text" class="form-control" id="username" name="username"
+                                            placeholder="username " required />
+                                        <label for="username">Usuario</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2 mt-2">
+                                    <span class="input-group-text">
+                                        <img src="./Image/Icons/password.svg" alt="Id_homework"
+                                            class="icon-form darken" loading="lazy" />
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            placeholder="Enter password" required />
+                                        <label for="password">Contraseña</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </article>
+            </div>
+            <div class="card-footer bg-white gap-2 justify-content-center">
+                <button type="submit" class="btn btn-secondary w-100 p-sm-2">Registrarse</button>
+                <center class="bg-white">
+                    <a class="href-custom" href="#/acceso">¿Ya, tienes cuenta? ¡Inicia sesión ahora!</a>
+                </center>
+            </div>
+
+        </form>
+    </div>
+   
+</section>

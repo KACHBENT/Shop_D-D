@@ -1,0 +1,18 @@
+#cart-page .table td, #cart-page .table th {
+  vertical-align: middle;
+}
+.cart-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: .5rem;
+  background: #f6f6f6;
+}
+.qty-input {
+  width: 72px;
+  text-align: center;
+}
+.qty-btn {
+  width: 32px;
+}
+

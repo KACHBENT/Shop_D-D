@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SHOP D&D</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link href="./Libraries/bootstrap-5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Styles/index.styles.css?v=20251006">
+</head>
+
+<body class="fondo">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#/" data-link>
+        <img src="./Image/Shop-D_D.webp" alt="Logo" class="icon-dyd" width="44" height="44">
+        <span>SHOP D&amp;D</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegación">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#/productos" data-link>Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#/" data-link>Conócenos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#/carrito" data-link data-auth="required">Carrito</a></li> 
+
+          <!-- Botón desplegable de usuario -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="./Image/Icons/users.svg" alt="Invitado" class="rounded-circle" width="44" height="44">
+              <span class="fw-semibold text-white">Invitado</span>
+            </a>
+            <!-- El JS rellena este menú -->
+            <ul id="userMenu" class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown"></ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <main id="app" class="container my-4" aria-live="polite" tabindex="-1"></main>
+
+  <footer class="footer bg-back py-3 mt-auto">
+    <div class="container">
+      <p class="mb-0 text-center text-white">
+        Página de Mercado Libre de anime &nbsp;|
+        <strong class="text-white">v 1.0.0.0 · 19/09/2025</strong>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/build/app.js?v=20251006"></script>
+  <script src="./Libraries/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+  <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container" style="z-index: 1080;"></div>
+</body>
+
+</html>

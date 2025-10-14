@@ -1,0 +1,34 @@
+body {
+  background: linear-gradient(180deg, #0d0d0d, #1b1b1b);
+  color: #fff;
+}
+
+.card {
+  background-color: #1f1f1f;
+  color: #eaeaea;
+}
+
+.card h4 {
+  color: #ff924f;
+}
+
+.btn-outline-primary {
+  border-color: #ff4f4f;
+  color: #ff5e4f;
+}
+
+.btn-outline-primary:hover {
+  background-color: #ff814f;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #dc6235;
+  border: none;
+}
+
+main {
+    background: none !important;
+    border:0.25px solid transparent !important;
+    border-radius: none !important;
+}
