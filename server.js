@@ -1,30 +1,36 @@
-// server.js — Node + Express: guarda/lee db/store.json con CRUD
+// server.js — Node + Express: guarda/lee db/store.json con CRUD + PDF (listo para Render)
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import PDFDocument from 'pdfkit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 const app = express();
 
-// Middlewares
+/* =========================
+   Middlewares
+========================= */
 app.use(cors({ origin: true, methods: ['GET','POST','PUT','DELETE','OPTIONS'] }));
 app.options('*', cors());
 app.use(express.json({ limit: '15mb' })); // soporta DataURL
+app.use(express.static(path.join(__dirname, 'public'))); // servir frontend si existe
 
-// Servir frontend estático (ajusta si tu carpeta pública es otra)
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Rutas de DB en disco
-const DB_DIR  = path.join(__dirname, 'db');
-const DB_FILE = path.join(DB_DIR, 'store.json');
-
+/* =========================
+   Utilidades de tiempo/ID
+========================= */
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`; }
+
+/* =========================
+   Rutas de DB en disco
+========================= */
+const DB_DIR  = path.join(__dirname, 'db');
+const DB_FILE = path.join(DB_DIR, 'store.json');
 
 function baseDB(){
   return {
@@ -86,13 +92,19 @@ function requireFields(obj, fields){
 }
 
 /* =========================
+   Endpoints básicos (Render)
+========================= */
+app.get('/health', (_req, res) => res.send('ok'));           // healthcheck para Render
+app.get('/', (_req, res) => res.send('Shop D&D API running'));// raíz simple si no hay index.html
+
+/* =========================
    DB: lectura total / descarga
 ========================= */
-app.get('/api/db', (req, res) => {
+app.get('/api/db', (_req, res) => {
   try { res.json(readDB()); } catch { res.status(500).json({ error: 'No se pudo leer la DB' }); }
 });
 
-app.get('/api/db/download', (req, res) => {
+app.get('/api/db/download', (_req, res) => {
   try {
     ensureDB();
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -128,7 +140,7 @@ app.post('/api/login', (req, res) => {
 /* =========================
    PERSONS CRUD
 ========================= */
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (_req, res) => {
   try { res.json(readDB().persons); } catch { res.status(500).json({ error: 'Error' }); }
 });
 
@@ -188,7 +200,7 @@ app.delete('/api/persons/:id', (req, res) => {
 /* =========================
    USERS CRUD  (+ /register)
 ========================= */
-app.get('/api/users', (req, res) => {
+app.get('/api/users', (_req, res) => {
   try { res.json(readDB().users); } catch { res.status(500).json({ error: 'Error' }); }
 });
 
@@ -314,12 +326,11 @@ app.delete('/api/users/:id', (req, res) => {
 /* =========================
    PRODUCTS CRUD
 ========================= */
-
-// GET /api/products?q=texto&category=figura&minPrice=10&maxPrice=100
+// GET /api/products?q=texto&category=figura
 app.get('/api/products', (req, res) => {
   try {
     const db = readDB();
-    const { q = '', category = '', minPrice = '', maxPrice = '' } = req.query;
+    const { q = '', category = '' } = req.query;
 
     let items = db.products.slice();
 
@@ -441,23 +452,18 @@ app.delete('/api/products/:id', (req, res) => {
   }
 });
 
-
-/* =========================
-   TICKETS CRUD
-========================= */
 /* =========================
    TICKETS CRUD + PDF
 ========================= */
-import PDFDocument from 'pdfkit';
 
-// Util: arma items desde un array de productIds repetidos
+// Util: agrupa items por productId
 function aggregateItemsById(productIds) {
   const map = new Map();
   for (const id of productIds) map.set(id, (map.get(id) || 0) + 1);
   return Array.from(map.entries()).map(([productId, qty]) => ({ productId, qty }));
 }
 
-// POST /api/tickets – crea ticket, valida stock, descuenta stock y guarda line items
+// POST /api/tickets – crea ticket, valida stock y descuenta
 app.post('/api/tickets', (req, res) => {
   try {
     const { code, userId, productIds, status, notes } = req.body || {};
@@ -470,11 +476,11 @@ app.post('/api/tickets', (req, res) => {
     const user = findById(db.users, userId);
     if (!user) return res.status(400).json({ error: 'Usuario del ticket no existe' });
 
-    // 2) agrupar items por producto y validar existencia
+    // 2) agrupar items y validar
     const grouped = aggregateItemsById(productIds || []);
     if (!grouped.length) return res.status(400).json({ error: 'No hay productos en el ticket' });
 
-    // 3) construir items y validar stock actual
+    // 3) construir items y validar stock
     const items = [];
     for (const { productId, qty } of grouped) {
       const prod = findById(db.products, productId);
@@ -495,7 +501,7 @@ app.post('/api/tickets', (req, res) => {
       });
     }
 
-    // 4) descontar stock (toda la operación será atómica en este proceso)
+    // 4) descontar stock
     for (const it of items) {
       const idx = db.products.findIndex(p => p.id === it.productId);
       db.products[idx].stock = Math.max(0, (db.products[idx].stock || 0) - it.qty);
@@ -503,13 +509,14 @@ app.post('/api/tickets', (req, res) => {
 
     // 5) total
     const subtotal = items.reduce((s, x) => s + x.lineTotal, 0);
-    const total = subtotal; // sin impuestos/envío
+    const total = subtotal;
+
     const ticket = {
       id: uid(),
       code,
       userId,
-      items,           // ahora items con qty y price
-      productIds,      // (mantengo compatibilidad con lo que mandas)
+      items,
+      productIds,
       status,
       notes: notes ?? '',
       subtotal,
@@ -521,7 +528,6 @@ app.post('/api/tickets', (req, res) => {
     db.tickets.push(ticket);
     writeDB(db);
 
-    // URL del PDF (stream bajo demanda)
     const pdfUrl = `/api/tickets/${encodeURIComponent(ticket.id)}/pdf`;
     res.json({ ticket, pdfUrl });
   } catch (e) {
@@ -530,12 +536,12 @@ app.post('/api/tickets', (req, res) => {
   }
 });
 
-// GET /api/tickets – listado simple
-app.get('/api/tickets', (req, res) => {
+// GET /api/tickets – listado
+app.get('/api/tickets', (_req, res) => {
   try { res.json(readDB().tickets); } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// GET /api/tickets/:id – leer 1 ticket
+// GET /api/tickets/:id – leer ticket
 app.get('/api/tickets/:id', (req, res) => {
   try {
     const db = readDB();
@@ -547,7 +553,7 @@ app.get('/api/tickets/:id', (req, res) => {
   }
 });
 
-// PUT /api/tickets/:id – actualizar estado/notas (no stock aquí)
+// PUT /api/tickets/:id – actualizar
 app.put('/api/tickets/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -564,7 +570,7 @@ app.put('/api/tickets/:id', (req, res) => {
   }
 });
 
-// DELETE /api/tickets/:id
+// DELETE /api/tickets/:id – eliminar
 app.delete('/api/tickets/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -622,7 +628,10 @@ app.get('/api/tickets/:id/pdf', (req, res) => {
     });
 
     doc.moveDown();
-    doc.font('Helvetica-Bold').text(`Total: ${ (t.total || 0).toLocaleString('es-MX',{ style:'currency', currency:'MXN'}) }`, { align: 'right' });
+    doc.font('Helvetica-Bold').text(
+      `Total: ${ (t.total || 0).toLocaleString('es-MX',{ style:'currency', currency:'MXN'}) }`,
+      { align: 'right' }
+    );
     doc.moveDown(2);
     doc.font('Helvetica').fontSize(10).text('Gracias por su compra.', { align: 'center', opacity: 0.8 });
 
@@ -632,12 +641,13 @@ app.get('/api/tickets/:id/pdf', (req, res) => {
     res.status(500).json({ error: 'No se pudo generar el PDF' });
   }
 });
+
 /* =========================
    Levantar servidor
 ========================= */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   ensureDB();
-  console.log(`✅ Servidor listo: http://localhost:${PORT}`);
+  console.log(`✅ Servidor listo en :${PORT}`);
   console.log(`📄 DB: ${DB_FILE}`);
 });
