@@ -69,7 +69,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar compra.html');
       return r.text();
     },
-    css: ['/Styles/Compras.Styles.css'],
+    css: ['./Styles/Compras.Styles.css'],
     js:  ['./Productos.Script.js'], // ajusta si el nombre real difiere
   },
   '/productos': {
@@ -79,7 +79,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar productos.html');
       return r.text();
     },
-    css: ['/Styles/VistaProducto.Styles.css'],
+    css: ['./Styles/VistaProducto.Styles.css'],
     js:  ['./VistaProducto.Script.js'],
   },
   '/carrito': {
@@ -89,7 +89,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar carrito.html');
       return r.text();
     },
-    css: ['/Styles/Carrito.Styles.css'],
+    css: ['./Styles/Carrito.Styles.css'],
     js:  ['./Carrito.Script.js'],
   },
   '/acceso': {
@@ -99,7 +99,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar acceso.html');
       return r.text();
     },
-    css: ['/Styles/Acceso.Styles.css'],
+    css: ['./Styles/Acceso.Styles.css'],
     js:  ['./Acceso.Script.js'],
   },
   '/registro-usuario': {
@@ -109,7 +109,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar registro-usuario.html');
       return r.text();
     },
-    css: ['/Styles/Registrousuario.Styles.css'],
+    css: ['./Styles/Registrousuario.Styles.css'],
     js:  ['./Registrousuario.Script.js'],
   },
   '/perfil': {
@@ -119,7 +119,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar perfil.html');
       return r.text();
     },
-    css: ['/Styles/Perfil.Styles.css'],
+    css: ['./Styles/Perfil.Styles.css'],
     js:  ['./Perfil.Script.js'],
   },
   '/editar-perfil': {
@@ -129,7 +129,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
       return r.text();
     },
-    css: ['/Styles/Registrousuario.Styles.css'],
+    css: ['./Styles/Registrousuario.Styles.css'],
     js:  ['./Editarperfil.Script.js'],
   },
   '/registro-usuario-admin': {
@@ -139,7 +139,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar registro-usuario-admin.html');
       return r.text();
     },
-    css: ['/Styles/Registrousuario.Styles.css'],
+    css: ['./Styles/Registrousuario.Styles.css'],
     js:  ['./RegistrousuarioAdministrador.Script.js'],
   },
   '/registrar-producto': {
@@ -149,7 +149,7 @@ const routes = {
       if (!r.ok) throw new Error('No se pudo cargar registro-producto.html');
       return r.text();
     },
-    css: ['/Styles/Registroproducto.Styles.css'],
+    css: ['./Styles/Registroproducto.Styles.css'],
     js:  ['./Registroproducto.Script.js'],
   },
 };
