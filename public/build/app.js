@@ -1,5 +1,5 @@
 // Code/app.js — ESM, Router SPA + Guards + Navbar user (rutas absolutas + cache busting robusto)
-import { isAuthenticated, getCurrentUser, logout } from '/Code/Auth.Script.js';
+import { isAuthenticated, getCurrentUser, logout } from './Auth.Script.js';
 
 const main = /** @type {HTMLElement|null} */ (document.getElementById('app'));
 if (!main) console.error('[app] No existe #app en el DOM.');
