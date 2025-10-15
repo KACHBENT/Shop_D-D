@@ -1,4 +1,5 @@
-// Code/app.js — ESM, Router SPA + Guards + Navbar user (rutas absolutas + cache busting robusto)
+// /public/build/app.js — ESM, Router SPA + Guards + Navbar user
+// Carga dinámica de JS desde /build y CSS desde /Styles con cache busting.
 import { isAuthenticated, getCurrentUser, logout } from './Auth.Script.js';
 
 const main = /** @type {HTMLElement|null} */ (document.getElementById('app'));
@@ -6,15 +7,12 @@ if (!main) console.error('[app] No existe #app en el DOM.');
 
 /* ============================
    Version busting (cache)
-============================ */  
-
- 
+============================ */
 let APP_VERSION = null;
 
 async function getVersion() {
   if (APP_VERSION) return APP_VERSION;
   try {
-    // versión en /version.json para que no dependa del lugar de app.js
     const res = await fetch('/version.json', { cache: 'no-store' });
     const data = await res.json();
     APP_VERSION = String(data.version || Date.now());
@@ -27,17 +25,26 @@ async function getVersion() {
 }
 
 function toAbsolute(path) {
-  if (/^https?:\/\//i.test(path)) return path;   // ya es absoluta
+  if (/^https?:\/\//i.test(path)) return path;   // ya es absoluta http/https
   if (path.startsWith('/')) return path;         // ya es root-absolute
-  // fuerzo absoluta desde raíz pública
-  return `/${path.replace(/^(\.\/|\.{2}\/)+/, '')}`;
+  return `/${path.replace(/^(\.\/|\.{2}\/)+/, '')}`; // fuerza absoluta a raíz
 }
 
-async function withBust(url) {
+// Cache-busting para recursos estáticos (HTML/CSS/img) servidos desde /public
+async function withBustStatic(urlLike) {
   const v = await getVersion();
-  const abs = toAbsolute(url);
-  const sep = abs.includes('?') ? '&' : '?';
-  return `${abs}${sep}v=${encodeURIComponent(v)}`;
+  const abs = toAbsolute(urlLike);
+  const u = new URL(abs, location.origin);
+  u.searchParams.set('v', v);
+  return u.href;
+}
+
+// Cache-busting para módulos JS **relativos a app.js** (o sea, /public/build/*)
+async function withBustModule(relPathFromBuild) {
+  const v = await getVersion();
+  const u = new URL(relPathFromBuild, import.meta.url); // relativo a /build/app.js
+  u.searchParams.set('v', v);
+  return u.href;
 }
 
 /* ============================
@@ -46,27 +53,28 @@ async function withBust(url) {
 const routes = {
   '/': {
     html: async () => {
-      const url = await withBust('/Views/Inicio.html');
+      const url = await withBustStatic('/Views/Inicio.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar Inicio.html');
       return r.text();
     },
     css: ['/Styles/Compras.Styles.css'],
+    // IMPORTANTE: rutas RELATIVAS a app.js en /build
     js:  ['./Inicio.Script.js'],
   },
   '/compra': {
     html: async () => {
-      const url = await withBust('/Views/compra.html');
+      const url = await withBustStatic('/Views/compra.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar compra.html');
       return r.text();
     },
     css: ['/Styles/Compras.Styles.css'],
-    js:  ['./Productos.Script.js'], // <-- si tu archivo se llama diferente, ajusta
+    js:  ['./Productos.Script.js'], // ajusta si el nombre real difiere
   },
   '/productos': {
     html: async () => {
-      const url = await withBust('/Views/productos.html');
+      const url = await withBustStatic('/Views/productos.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar productos.html');
       return r.text();
@@ -76,7 +84,7 @@ const routes = {
   },
   '/carrito': {
     html: async () => {
-      const url = await withBust('/Views/carrito.html');
+      const url = await withBustStatic('/Views/carrito.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar carrito.html');
       return r.text();
@@ -86,7 +94,7 @@ const routes = {
   },
   '/acceso': {
     html: async () => {
-      const url = await withBust('/Views/acceso.html');
+      const url = await withBustStatic('/Views/acceso.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar acceso.html');
       return r.text();
@@ -96,7 +104,7 @@ const routes = {
   },
   '/registro-usuario': {
     html: async () => {
-      const url = await withBust('/Views/registro-usuario.html');
+      const url = await withBustStatic('/Views/registro-usuario.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar registro-usuario.html');
       return r.text();
@@ -106,7 +114,7 @@ const routes = {
   },
   '/perfil': {
     html: async () => {
-      const url = await withBust('/Views/perfil.html');
+      const url = await withBustStatic('/Views/perfil.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar perfil.html');
       return r.text();
@@ -116,7 +124,7 @@ const routes = {
   },
   '/editar-perfil': {
     html: async () => {
-      const url = await withBust('/Views/editar-perfil.html');
+      const url = await withBustStatic('/Views/editar-perfil.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
       return r.text();
@@ -126,7 +134,7 @@ const routes = {
   },
   '/registro-usuario-admin': {
     html: async () => {
-      const url = await withBust('/Views/registro-usuario-admin.html');
+      const url = await withBustStatic('/Views/registro-usuario-admin.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar registro-usuario-admin.html');
       return r.text();
@@ -136,7 +144,7 @@ const routes = {
   },
   '/registrar-producto': {
     html: async () => {
-      const url = await withBust('/Views/registro-producto.html');
+      const url = await withBustStatic('/Views/registro-producto.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar registro-producto.html');
       return r.text();
@@ -272,24 +280,28 @@ async function loadRoute(path) {
   await cleanup();
 
   try {
+    // HTML
     const html = await routes[route].html();
 
+    // CSS dinámico
     const styles = [];
     for (const href of routes[route].css) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = await withBust(href);
+      link.href = await withBustStatic(href);
       link.dataset.pageAsset = route;
       document.head.appendChild(link);
       styles.push(link);
     }
 
+    // Monta HTML
     main.innerHTML = html;
     main.focus();
 
+    // JS dinámico (módulos relativos a /build)
     let mod = null;
-    for (const src of routes[route].js) {
-      mod = await import(await withBust(src));
+    for (const rel of routes[route].js) {
+      mod = await import(await withBustModule(rel));
     }
 
     current = { route, styles, scripts: [], module: mod, aborter };
