@@ -50,15 +50,18 @@ app.use(express.json({ limit: '15mb' })); // soporta DataURL
 app.use(compression());
 
 // Cache-Control: HTML no cache, assets cache largo
-app.use((req, res, next) => {
-  if (req.method !== 'GET') return next();
-  if (req.path.endsWith('.html') || req.path === '/' || req.path === '/index.html') {
-    res.setHeader('Cache-Control', 'no-store, max-age=0');
-  } else if (/\.(?:js|css|png|jpg|jpeg|webp|svg|ico|woff2?)$/i.test(req.path)) {
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  setHeaders: (res, filePath) => {
+    // No cache para HTML y JSON (version.json)
+    if (filePath.endsWith('.html') || filePath.endsWith('version.json')) {
+      res.setHeader('Cache-Control', 'no-store');
+    } else {
+      // Cache largo para assets fingerprinted (?v=)
+      res.setHeader('Cache-Control', `public, max-age=${oneYear}, immutable`);
+    }
   }
-  next();
-});
+}));
 
 // Servir frontend si existe
 app.use(express.static(publicDir, { extensions: ['html'] }));

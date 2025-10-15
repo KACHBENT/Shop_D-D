@@ -1,5 +1,5 @@
-// Code/app.js — ESM, Router SPA + Guards + Navbar user
-import { isAuthenticated, getCurrentUser, logout } from './Auth.Script.js';
+// Code/app.js — ESM, Router SPA + Guards + Navbar user (rutas absolutas + cache busting robusto)
+import { isAuthenticated, getCurrentUser, logout } from '/Code/Auth.Script.js';
 
 const main = /** @type {HTMLElement|null} */ (document.getElementById('app'));
 if (!main) console.error('[app] No existe #app en el DOM.');
@@ -8,10 +8,12 @@ if (!main) console.error('[app] No existe #app en el DOM.');
    Version busting (cache)
 ============================ */
 let APP_VERSION = null;
+
 async function getVersion() {
   if (APP_VERSION) return APP_VERSION;
   try {
-    const res = await fetch('../version.json', { cache: 'no-store' });
+    // versión en /version.json para que no dependa del lugar de app.js
+    const res = await fetch('/version.json', { cache: 'no-store' });
     const data = await res.json();
     APP_VERSION = String(data.version || Date.now());
   } catch {
@@ -21,10 +23,19 @@ async function getVersion() {
   }
   return APP_VERSION;
 }
+
+function toAbsolute(path) {
+  if (/^https?:\/\//i.test(path)) return path;   // ya es absoluta
+  if (path.startsWith('/')) return path;         // ya es root-absolute
+  // fuerzo absoluta desde raíz pública
+  return `/${path.replace(/^(\.\/|\.{2}\/)+/, '')}`;
+}
+
 async function withBust(url) {
   const v = await getVersion();
-  const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}v=${encodeURIComponent(v)}`;
+  const abs = toAbsolute(url);
+  const sep = abs.includes('?') ? '&' : '?';
+  return `${abs}${sep}v=${encodeURIComponent(v)}`;
 }
 
 /* ============================
@@ -33,113 +44,104 @@ async function withBust(url) {
 const routes = {
   '/': {
     html: async () => {
-      const url = await withBust('../Views/Inicio.html');
+      const url = await withBust('/Views/Inicio.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar Inicio.html');
       return r.text();
     },
-    css: ['../Styles/Compras.Styles.css'],
-    js: ['./Inicio.Script.js'],
+    css: ['/Styles/Compras.Styles.css'],
+    js:  ['/Code/Inicio.Script.js'],
   },
   '/compra': {
     html: async () => {
-      const url = await withBust('../Views/compra.html');
+      const url = await withBust('/Views/compra.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar compra.html');
       return r.text();
     },
-    css: ['../Styles/Compras.Styles.css'],
-    js: ['./Compras.Script.js'],
+    css: ['/Styles/Compras.Styles.css'],
+    js:  ['/Code/Productos.Script.js'], // <-- si tu archivo se llama diferente, ajusta
+  },
+  '/productos': {
+    html: async () => {
+      const url = await withBust('/Views/productos.html');
+      const r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) throw new Error('No se pudo cargar productos.html');
+      return r.text();
+    },
+    css: ['/Styles/VistaProducto.Styles.css'],
+    js:  ['/Code/VistaProducto.Script.js'],
   },
   '/carrito': {
     html: async () => {
-      const url = await withBust('../Views/carrito.html'); // crea este archivo si no existe
+      const url = await withBust('/Views/carrito.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar carrito.html');
       return r.text();
     },
-    css: ['../Styles/Compras.Styles.css'],
-    js: ['./Carrito.Script.js'], // crea este archivo si no existe
+    css: ['/Styles/Carrito.Styles.css'],
+    js:  ['/Code/Carrito.Script.js'],
   },
   '/acceso': {
     html: async () => {
-      const url = await withBust('../Views/acceso.html');
+      const url = await withBust('/Views/acceso.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar acceso.html');
       return r.text();
     },
-    css: ['../Styles/Acceso.Styles.css'],
-    js: ['./Acceso.Script.js'],
+    css: ['/Styles/Acceso.Styles.css'],
+    js:  ['/Code/Acceso.Script.js'],
   },
   '/registro-usuario': {
     html: async () => {
-      const url = await withBust('../Views/registro-usuario.html');
+      const url = await withBust('/Views/registro-usuario.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar registro-usuario.html');
       return r.text();
     },
-    css: ['../Styles/Registrousuario.Styles.css'],
-    js: ['./Registrousuario.Script.js'],
+    css: ['/Styles/Registrousuario.Styles.css'],
+    js:  ['/Code/Registrousuario.Script.js'],
   },
   '/perfil': {
     html: async () => {
-      const url = await withBust('../Views/perfil.html');
+      const url = await withBust('/Views/perfil.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar perfil.html');
       return r.text();
     },
-    css: ['../Styles/Perfil.Styles.css'],
-    js: ['./Perfil.Script.js'],
+    css: ['/Styles/Perfil.Styles.css'],
+    js:  ['/Code/Perfil.Script.js'],
   },
   '/editar-perfil': {
     html: async () => {
-      const url = await withBust('../Views/editar-perfil.html');
+      const url = await withBust('/Views/editar-perfil.html');
       const r = await fetch(url, { cache: 'no-store' });
       if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
       return r.text();
     },
-    css: ['../Styles/Registrousuario.Styles.css'],
-    js: ['./Editarperfil.Script.js'],
+    css: ['/Styles/Registrousuario.Styles.css'],
+    js:  ['/Code/Editarperfil.Script.js'],
   },
   '/registro-usuario-admin': {
     html: async () => {
-      const url = await withBust('../Views/registro-usuario-admin.html');
+      const url = await withBust('/Views/registro-usuario-admin.html');
       const r = await fetch(url, { cache: 'no-store' });
-      if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
+      if (!r.ok) throw new Error('No se pudo cargar registro-usuario-admin.html');
       return r.text();
     },
-    css: ['../Styles/Registrousuario.Styles.css'],
-    js: ['./RegistrousuarioAdministrador.Script.js'],
+    css: ['/Styles/Registrousuario.Styles.css'],
+    js:  ['/Code/RegistrousuarioAdministrador.Script.js'],
   },
   '/registrar-producto': {
     html: async () => {
-      const url = await withBust('../Views/registro-producto.html');
+      const url = await withBust('/Views/registro-producto.html');
       const r = await fetch(url, { cache: 'no-store' });
-      if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
+      if (!r.ok) throw new Error('No se pudo cargar registro-producto.html');
       return r.text();
     },
-    css: ['../Styles/Registroproducto.Styles.css'],
-    js: ['./Registroproducto.Script.js'],
+    css: ['/Styles/Registroproducto.Styles.css'],
+    js:  ['/Code/Registroproducto.Script.js'],
   },
-   '/productos': {
-    html: async () => {
-      const url = await withBust('../Views/productos.html');
-      const r = await fetch(url, { cache: 'no-store' });
-      if (!r.ok) throw new Error('No se pudo cargar editar-perfil.html');
-      return r.text();
-    },
-    css: ['../Styles/VistaProducto.Styles.css'],
-    js: ['./VistaProducto.Script.js'],
-  },'/carrito ': {
-  html: async () => {
-    const url = await withBust('../Views/carrito.html');
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error('No se pudo cargar carrito.html');
-    return r.text();
-  },
-  css: ['../Styles/Carrito.Styles.css'],
-  js: ['./Carrito.Script.js'],
-},
 };
 
 /* ============================
@@ -156,14 +158,12 @@ let current = {
 /* ============================
    Navbar: usuario (ASYNC)
 ============================ */
-// Menú cuando NO hay sesión
 function renderGuestMenu(menuEl) {
   if (!menuEl) return;
   menuEl.innerHTML = `
     <a class="dropdown-item" href="#/acceso" data-link>Iniciar sesión</a>
   `;
 }
-// Menú cuando SÍ hay sesión
 function renderUserMenu(menuEl) {
   if (!menuEl) return;
   menuEl.innerHTML = `
@@ -172,8 +172,6 @@ function renderUserMenu(menuEl) {
     <a class="dropdown-item text-danger" href="#/logout" data-link>Cerrar sesión</a>
   `;
 }
-
-// Guard en enlaces de la barra: si no hay sesión, envía a /acceso
 function applyAuthGuards() {
   document.querySelectorAll('a[data-auth="required"]').forEach(a => {
     a.addEventListener('click', (e) => {
@@ -181,14 +179,12 @@ function applyAuthGuards() {
         e.preventDefault();
         location.hash = '/acceso';
       }
-    });
+    }, { once: true });
   });
 }
-
-// Actualiza avatar/nombre y menú
 async function updateNavbarUser() {
   const dropdown = document.querySelector('#userDropdown');
-  const menuEl   = document.querySelector('#userMenu'); // <ul class="dropdown-menu"...>
+  const menuEl   = document.querySelector('#userMenu');
   if (!dropdown) return;
 
   const img = dropdown.querySelector('img');
@@ -199,14 +195,14 @@ async function updateNavbarUser() {
     if (me && me.user) {
       if (nameSpan) nameSpan.textContent = me.person?.name || me.user.username;
       if (img) {
-        img.setAttribute('src', me.user.avatar || './Image/Icons/user.svg');
+        img.setAttribute('src', me.user.avatar || '/Image/Icons/user.svg');
         img.setAttribute('alt', me.user.username);
       }
       renderUserMenu(menuEl);
     } else {
       if (nameSpan) nameSpan.textContent = 'Invitado';
       if (img) {
-        img.setAttribute('src', './Image/Icons/users.svg');
+        img.setAttribute('src', '/Image/Icons/users.svg');
         img.setAttribute('alt', 'Invitado');
       }
       renderGuestMenu(menuEl);
@@ -214,13 +210,11 @@ async function updateNavbarUser() {
   } catch {
     if (nameSpan) nameSpan.textContent = 'Invitado';
     if (img) {
-      img.setAttribute('src', './Image/Icons/users.svg');
+      img.setAttribute('src', '/Image/Icons/users.svg');
       img.setAttribute('alt', 'Invitado');
     }
     renderGuestMenu(menuEl);
   }
-
-  // Reaplica guardas después de renderizar
   applyAuthGuards();
 }
 
@@ -241,17 +235,14 @@ function parseRoute() {
   const raw = (location.hash || '').replace(/^#/, '') || '/';
   return routes[raw] ? raw : '/';
 }
-
-// Rutas protegidas (requieren sesión)
 const protectedRoutes = new Set([
   '/perfil',
   '/editar-perfil',
   '/compra',
   '/carrito',
-  '/registrar-producto'
+  '/registrar-producto',
 ]);
 
-// Pseudo-ruta logout
 function isLogoutRoute(path) {
   return path === '/logout' || path === '#/logout' || location.hash === '#/logout';
 }
@@ -259,7 +250,6 @@ function isLogoutRoute(path) {
 async function loadRoute(path) {
   if (!main) return;
 
-  // logout
   if (isLogoutRoute(path)) {
     logout();
     void updateNavbarUser();
@@ -269,13 +259,11 @@ async function loadRoute(path) {
 
   const route = routes[path] ? path : '/';
 
-  // guard (si no hay sesión y la ruta es protegida -> /acceso)
   if (protectedRoutes.has(route) && !isAuthenticated()) {
     location.hash = '/acceso';
     return;
   }
 
-  // cancelar vista anterior
   if (current.aborter) current.aborter.abort();
   const aborter = new AbortController();
 
@@ -333,7 +321,6 @@ window.addEventListener('DOMContentLoaded', () => {
   route();
 });
 
-// Enlaces con data-link
 document.addEventListener('click', e => {
   const a = e.target && (/** @type HTMLElement */(e.target)).closest?.('a[data-link]');
   if (!a) return;
@@ -346,9 +333,7 @@ document.addEventListener('click', e => {
   }
 });
 
-// refrescar navbar ante cambios de usuario/DB
 window.addEventListener('user:updated', () => { void updateNavbarUser(); });
 window.addEventListener('db:changed',   () => { void updateNavbarUser(); });
 
-// Debug opcional
 Object.assign(window, { __router: { loadRoute, parseRoute, updateNavbarUser } });
