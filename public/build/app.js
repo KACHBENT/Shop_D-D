@@ -6,7 +6,9 @@ if (!main) console.error('[app] No existe #app en el DOM.');
 
 /* ============================
    Version busting (cache)
-============================ */
+============================ */  
+
+ 
 let APP_VERSION = null;
 
 async function getVersion() {
