@@ -1,4 +1,5 @@
 // Code/Acceso.Script.ts — TypeScript (ESM) — Login vía backend (/api/login)
+var _a, _b;
 /** Normaliza el base de la API:
  * - Si no se define, usa el origin actual (http://localhost:3000 en local).
  * - Si viene sin protocolo (ej: "shopd-d-production.up.railway.app"), antepone "https://".
@@ -11,7 +12,8 @@ function normalizeBase(raw) {
         return val.replace(/\/+$/, "");
     return `https://${val.replace(/\/+$/, "")}`;
 }
-const API_BASE = normalizeBase(window.__API_BASE__ || "shopd-d-production.up.railway.app");
+const API_BASE = ((_b = (_a = (window).__API_BASE__) === null || _a === void 0 ? void 0 : _a.trim) === null || _b === void 0 ? void 0 : _b.call(_a)) ||
+    `${location.protocol}//${location.host}`;
 // -------- Toasts --------
 function ensureToastContainer() {
     let c = document.getElementById("toast-container");

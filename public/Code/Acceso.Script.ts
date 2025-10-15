@@ -15,7 +15,9 @@ function normalizeBase(raw?: string): string {
   return `https://${val.replace(/\/+$/, "")}`;
 }
 
-const API_BASE = normalizeBase((window as any).__API_BASE__ || "shopd-d-production.up.railway.app");
+const API_BASE =
+  (window).__API_BASE__?.trim?.() ||
+  `${location.protocol}//${location.host}`;
 
 // -------- Toasts --------
 function ensureToastContainer(): HTMLDivElement {

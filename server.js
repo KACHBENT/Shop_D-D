@@ -49,15 +49,14 @@ app.options('*', cors());
 app.use(express.json({ limit: '15mb' })); // soporta DataURL
 app.use(compression());
 
-// Cache-Control: HTML no cache, assets cache largo
+const oneYear = 31536000;
+
 app.use(express.static(path.join(__dirname, 'public'), {
   etag: false,
   setHeaders: (res, filePath) => {
-    // No cache para HTML y JSON (version.json)
     if (filePath.endsWith('.html') || filePath.endsWith('version.json')) {
       res.setHeader('Cache-Control', 'no-store');
     } else {
-      // Cache largo para assets fingerprinted (?v=)
       res.setHeader('Cache-Control', `public, max-age=${oneYear}, immutable`);
     }
   }

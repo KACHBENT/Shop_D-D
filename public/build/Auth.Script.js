@@ -1,6 +1,8 @@
+var _a, _b;
 // Code/Auth.Script.ts — TypeScript (ESM, frontend)
 // Provee: isAuthenticated (sync), getCurrentUser (async), login (async), logout (sync)
-const API_BASE = window.__API_BASE__ || 'shopd-d-production.up.railway.app';
+const API_BASE = ((_b = (_a = (window).__API_BASE__) === null || _a === void 0 ? void 0 : _a.trim) === null || _b === void 0 ? void 0 : _b.call(_a)) ||
+    `${location.protocol}//${location.host}`;
 /* ======================
    Resolución de base URL de API
    - Si NO estás en :3000 (p.ej. :5501 Live Server), apunta a http://localhost:3000
