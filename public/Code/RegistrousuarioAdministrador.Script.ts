@@ -29,7 +29,7 @@ interface UserState {
   person: PersonForm;
   role: Role | "";
 }
-const API_BASE = (window as any).__API_BASE__ || 'http://localhost:3000';
+const API_BASE = (window as any).__API_BASE__ || 'shopd-d-production.up.railway.app';
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const userState: UserState = {

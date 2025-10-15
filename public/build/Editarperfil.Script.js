@@ -1,6 +1,6 @@
 // Code/EditarPerfil.Script.ts — TypeScript (ESM)
 // Actualiza Persona y Usuario contra el backend (server.js) que guarda en db/store.json
-const API_BASE = window.__API_BASE__ || 'http://localhost:3000';
+const API_BASE = window.__API_BASE__ || 'shopd-d-production.up.railway.app';
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SS_SESSION = 'currentUserId';
 // ---------- Toasts ----------

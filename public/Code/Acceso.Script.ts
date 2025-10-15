@@ -1,7 +1,7 @@
 // Code/Acceso.Script.ts — TypeScript (ESM) — Login vía backend (/api/login)
 
 declare global { interface Window { bootstrap?: any; } }
-const API_BASE = (window as any).__API_BASE__ || 'http://localhost:3000';
+const API_BASE = (window as any).__API_BASE__ || 'shopd-d-production.up.railway.app';
 type ToastType = "success" | "danger" | "warning" | "info";
 
 // -------- Toasts --------

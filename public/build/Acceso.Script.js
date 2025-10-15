@@ -1,5 +1,5 @@
 // Code/Acceso.Script.ts — TypeScript (ESM) — Login vía backend (/api/login)
-const API_BASE = window.__API_BASE__ || 'http://localhost:3000';
+const API_BASE = window.__API_BASE__ || 'shopd-d-production.up.railway.app';
 // -------- Toasts --------
 function ensureToastContainer() {
     let c = document.getElementById("toast-container");

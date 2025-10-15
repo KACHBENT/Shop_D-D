@@ -2,7 +2,7 @@
 // Actualiza Persona y Usuario contra el backend (server.js) que guarda en db/store.json
 
 declare global { interface Window { bootstrap?: any; } }
-const API_BASE = (window as any).__API_BASE__ || 'http://localhost:3000';
+const API_BASE = (window as any).__API_BASE__ || 'shopd-d-production.up.railway.app';
 type ToastType = "success" | "danger" | "warning" | "info";
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SS_SESSION = 'currentUserId';

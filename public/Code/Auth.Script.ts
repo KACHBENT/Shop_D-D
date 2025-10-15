@@ -26,7 +26,7 @@ export interface UserWithPerson {
   user: DBUser;
   person: DBPerson;
 }
-const API_BASE = (window as any).__API_BASE__ || 'http://localhost:3000';
+const API_BASE = (window as any).__API_BASE__ || 'shopd-d-production.up.railway.app';
 /* ======================
    Resolución de base URL de API
    - Si NO estás en :3000 (p.ej. :5501 Live Server), apunta a http://localhost:3000
