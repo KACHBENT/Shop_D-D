@@ -50,7 +50,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Compras.Styles.css'],
-    js:  ['/Code/Inicio.Script.js'],
+    js:  ['./Inicio.Script.js'],
   },
   '/compra': {
     html: async () => {
@@ -60,7 +60,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Compras.Styles.css'],
-    js:  ['/Code/Productos.Script.js'], // <-- si tu archivo se llama diferente, ajusta
+    js:  ['./Productos.Script.js'], // <-- si tu archivo se llama diferente, ajusta
   },
   '/productos': {
     html: async () => {
@@ -70,7 +70,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/VistaProducto.Styles.css'],
-    js:  ['/Code/VistaProducto.Script.js'],
+    js:  ['./VistaProducto.Script.js'],
   },
   '/carrito': {
     html: async () => {
@@ -80,7 +80,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Carrito.Styles.css'],
-    js:  ['/Code/Carrito.Script.js'],
+    js:  ['./Carrito.Script.js'],
   },
   '/acceso': {
     html: async () => {
@@ -90,7 +90,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Acceso.Styles.css'],
-    js:  ['/Code/Acceso.Script.js'],
+    js:  ['./Acceso.Script.js'],
   },
   '/registro-usuario': {
     html: async () => {
@@ -100,7 +100,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Registrousuario.Styles.css'],
-    js:  ['/Code/Registrousuario.Script.js'],
+    js:  ['./Registrousuario.Script.js'],
   },
   '/perfil': {
     html: async () => {
@@ -110,7 +110,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Perfil.Styles.css'],
-    js:  ['/Code/Perfil.Script.js'],
+    js:  ['./Perfil.Script.js'],
   },
   '/editar-perfil': {
     html: async () => {
@@ -120,7 +120,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Registrousuario.Styles.css'],
-    js:  ['/Code/Editarperfil.Script.js'],
+    js:  ['./Editarperfil.Script.js'],
   },
   '/registro-usuario-admin': {
     html: async () => {
@@ -130,7 +130,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Registrousuario.Styles.css'],
-    js:  ['/Code/RegistrousuarioAdministrador.Script.js'],
+    js:  ['./RegistrousuarioAdministrador.Script.js'],
   },
   '/registrar-producto': {
     html: async () => {
@@ -140,7 +140,7 @@ const routes = {
       return r.text();
     },
     css: ['/Styles/Registroproducto.Styles.css'],
-    js:  ['/Code/Registroproducto.Script.js'],
+    js:  ['./Registroproducto.Script.js'],
   },
 };
 
