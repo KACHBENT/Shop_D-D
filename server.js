@@ -1,24 +1,67 @@
-// server.js — Node + Express: guarda/lee db/store.json con CRUD + PDF (listo para Render)
+// server.js — Node + Express: CRUD + Cache sano + PDF + SPA fallback
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import compression from 'compression';
 import PDFDocument from 'pdfkit';
 
+/* =========================
+   Paths / App
+========================= */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 const app = express();
+const publicDir = path.join(__dirname, 'public');
+
+/* =========================
+   CORS (localhost + Railway)
+========================= */
+const DEFAULT_ORIGINS = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://shopd-d-production.up.railway.app',
+];
+const ENV_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+const ALLOWED = ENV_ORIGINS.length ? ENV_ORIGINS : DEFAULT_ORIGINS;
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // requests desde fetch del mismo origen en SSR no traen origin
+    if (!origin) return cb(null, true);
+    cb(null, ALLOWED.includes(origin));
+  },
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  credentials: false,
+}));
+app.options('*', cors());
 
 /* =========================
    Middlewares
 ========================= */
-app.use(cors({ origin: true, methods: ['GET','POST','PUT','DELETE','OPTIONS'] }));
-app.options('*', cors());
 app.use(express.json({ limit: '15mb' })); // soporta DataURL
-app.use(express.static(path.join(__dirname, 'public'))); // servir frontend si existe
+app.use(compression());
+
+// Cache-Control: HTML no cache, assets cache largo
+app.use((req, res, next) => {
+  if (req.method !== 'GET') return next();
+  if (req.path.endsWith('.html') || req.path === '/' || req.path === '/index.html') {
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+  } else if (/\.(?:js|css|png|jpg|jpeg|webp|svg|ico|woff2?)$/i.test(req.path)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+  next();
+});
+
+// Servir frontend si existe
+app.use(express.static(publicDir, { extensions: ['html'] }));
 
 /* =========================
    Utilidades de tiempo/ID
@@ -27,7 +70,7 @@ function nowISO(){ return new Date().toISOString(); }
 function uid(){ return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`; }
 
 /* =========================
-   Rutas de DB en disco
+   DB en disco
 ========================= */
 const DB_DIR  = path.join(__dirname, 'db');
 const DB_FILE = path.join(DB_DIR, 'store.json');
@@ -53,7 +96,7 @@ function readDB(){
     const raw = fs.readFileSync(DB_FILE, 'utf8');
     const db = JSON.parse(raw);
 
-    // Autocorrección de estructura
+    // Autocorrección
     if (!db || typeof db !== 'object') return baseDB();
     if (!Array.isArray(db.persons))  db.persons  = [];
     if (!Array.isArray(db.users))    db.users    = [];
@@ -64,14 +107,12 @@ function readDB(){
     }
     return db;
   } catch {
-    // Si está corrupto, reinicializa
     const fresh = baseDB();
     fs.writeFileSync(DB_FILE, JSON.stringify(fresh, null, 2), 'utf8');
     return fresh;
   }
 }
 function writeDB(db){
-  // Robustez: normalizar
   if (!db || typeof db !== 'object') db = baseDB();
   if (!db._meta || typeof db._meta !== 'object') {
     db._meta = { version: 1, updatedAt: nowISO() };
@@ -83,7 +124,7 @@ function writeDB(db){
 }
 
 /* =========================
-   Utilidades comunes
+   Helpers comunes
 ========================= */
 function findById(arr, id){ return arr.find(x => x.id === id) || null; }
 function requireFields(obj, fields){
@@ -92,18 +133,22 @@ function requireFields(obj, fields){
 }
 
 /* =========================
-   Endpoints básicos (Render)
+   Health / raíz
 ========================= */
-app.get('/health', (_req, res) => res.send('ok'));           // healthcheck para Render
-app.get('/', (_req, res) => res.send('Shop D&D API running'));// raíz simple si no hay index.html
+app.get('/health', (_req, res) => res.send('ok'));
+app.get('/', (_req, res, next) => {
+  // Si hay index.html sirve SPA; si no, un mensaje
+  const idx = path.join(publicDir, 'index.html');
+  if (fs.existsSync(idx)) return res.sendFile(idx);
+  res.send('Shop D&D API running');
+});
 
 /* =========================
-   DB: lectura total / descarga
+   DB: lectura / descarga
 ========================= */
 app.get('/api/db', (_req, res) => {
   try { res.json(readDB()); } catch { res.status(500).json({ error: 'No se pudo leer la DB' }); }
 });
-
 app.get('/api/db/download', (_req, res) => {
   try {
     ensureDB();
@@ -143,7 +188,6 @@ app.post('/api/login', (req, res) => {
 app.get('/api/persons', (_req, res) => {
   try { res.json(readDB().persons); } catch { res.status(500).json({ error: 'Error' }); }
 });
-
 app.post('/api/persons', (req, res) => {
   try {
     const { name, fatherLastname, motherLastname, email } = req.body || {};
@@ -162,7 +206,6 @@ app.post('/api/persons', (req, res) => {
     res.status(500).json({ error: 'No se pudo crear persona' });
   }
 });
-
 app.put('/api/persons/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -182,7 +225,6 @@ app.put('/api/persons/:id', (req, res) => {
     res.status(500).json({ error: 'No se pudo actualizar persona' });
   }
 });
-
 app.delete('/api/persons/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -203,7 +245,6 @@ app.delete('/api/persons/:id', (req, res) => {
 app.get('/api/users', (_req, res) => {
   try { res.json(readDB().users); } catch { res.status(500).json({ error: 'Error' }); }
 });
-
 app.get('/api/users/:id', (req, res) => {
   try {
     const db = readDB();
@@ -216,7 +257,7 @@ app.get('/api/users/:id', (req, res) => {
   }
 });
 
-// Registro combinado persona + usuario (avatar OBLIGATORIO)
+// Registro persona + usuario (avatar OBLIGATORIO)
 app.post('/api/users/register', (req, res) => {
   try {
     const { person, user } = req.body || {};
@@ -249,7 +290,7 @@ app.post('/api/users/register', (req, res) => {
     const userObj = {
       id: uid(),
       username: String(user.username).trim(),
-      userPassword: String(user.userPassword), // DEMO: en prod hashea
+      userPassword: String(user.userPassword), // DEMO (en prod: hash)
       personId: personObj.id,
       avatar: String(user.avatar),
       role: user.role || 'cliente',
@@ -264,7 +305,6 @@ app.post('/api/users/register', (req, res) => {
     res.status(500).json({ error: 'No se pudo registrar' });
   }
 });
-
 app.post('/api/users', (req, res) => {
   try {
     const { username, userPassword, personId, avatar, role } = req.body || {};
@@ -285,7 +325,6 @@ app.post('/api/users', (req, res) => {
     res.status(500).json({ error: 'No se pudo crear usuario' });
   }
 });
-
 app.put('/api/users/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -308,7 +347,6 @@ app.put('/api/users/:id', (req, res) => {
     res.status(500).json({ error: 'No se pudo actualizar usuario' });
   }
 });
-
 app.delete('/api/users/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -324,16 +362,17 @@ app.delete('/api/users/:id', (req, res) => {
 });
 
 /* =========================
-   PRODUCTS CRUD
+   PRODUCTS CRUD + filtros
 ========================= */
-// GET /api/products?q=texto&category=figura
+// GET /api/products?q=&category=&minPrice=&maxPrice=
 app.get('/api/products', (req, res) => {
   try {
     const db = readDB();
-    const { q = '', category = '' } = req.query;
+    const { q = '', category = '', minPrice = '', maxPrice = '' } = req.query;
 
     let items = db.products.slice();
 
+    // texto
     if (q) {
       const needle = String(q).toLowerCase();
       items = items.filter(p =>
@@ -342,15 +381,25 @@ app.get('/api/products', (req, res) => {
         String(p.sku || '').toLowerCase().includes(needle)
       );
     }
+    // categoría
     if (category) {
       items = items.filter(p => (p.category || '') === String(category));
     }
+    // precios
+    const min = minPrice !== '' ? Number(minPrice) : null;
+    const max = maxPrice !== '' ? Number(maxPrice) : null;
+    if (min != null && Number.isFinite(min)) {
+      items = items.filter(p => Number(p.price) >= min);
+    }
+    if (max != null && Number.isFinite(max)) {
+      items = items.filter(p => Number(p.price) <= max);
+    }
+
     res.json(items);
   } catch {
     res.status(500).json({ error: 'Error' });
   }
 });
-
 app.get('/api/products/:id', (req, res) => {
   try {
     const db = readDB();
@@ -361,7 +410,6 @@ app.get('/api/products/:id', (req, res) => {
     res.status(500).json({ error: 'Error' });
   }
 });
-
 app.post('/api/products', (req, res) => {
   try {
     const { name, price, stock, sku, image, category, description } = req.body || {};
@@ -369,7 +417,7 @@ app.post('/api/products', (req, res) => {
     const miss = requireFields(req.body || {}, ['name','price','stock']);
     if (miss) return res.status(400).json({ error: `Falta ${miss}` });
 
-    const _name = String(name).trim();
+    const _name  = String(name).trim();
     const _price = Number(price);
     const _stock = Number(stock);
     if (!_name) return res.status(400).json({ error: 'Nombre vacío' });
@@ -384,7 +432,7 @@ app.post('/api/products', (req, res) => {
       price: _price,
       stock: _stock,
       sku: (sku != null && String(sku).trim() !== '') ? String(sku).trim() : null,
-      image: image ?? null, // DataURL o URL opcional
+      image: image ?? null,
       category: (category != null && String(category).trim() !== '') ? String(category).trim() : null,
       description: (description != null && String(description).trim() !== '') ? String(description).trim() : null,
       createdAt: nowISO(),
@@ -399,7 +447,6 @@ app.post('/api/products', (req, res) => {
     res.status(500).json({ error: 'No se pudo crear producto' });
   }
 });
-
 app.put('/api/products/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -437,7 +484,6 @@ app.put('/api/products/:id', (req, res) => {
     res.status(500).json({ error: 'No se pudo actualizar producto' });
   }
 });
-
 app.delete('/api/products/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -455,15 +501,13 @@ app.delete('/api/products/:id', (req, res) => {
 /* =========================
    TICKETS CRUD + PDF
 ========================= */
-
-// Util: agrupa items por productId
 function aggregateItemsById(productIds) {
   const map = new Map();
   for (const id of productIds) map.set(id, (map.get(id) || 0) + 1);
   return Array.from(map.entries()).map(([productId, qty]) => ({ productId, qty }));
 }
 
-// POST /api/tickets – crea ticket, valida stock y descuenta
+// POST /api/tickets – valida stock, descuenta, guarda y responde con URL PDF
 app.post('/api/tickets', (req, res) => {
   try {
     const { code, userId, productIds, status, notes } = req.body || {};
@@ -472,15 +516,12 @@ app.post('/api/tickets', (req, res) => {
 
     const db = readDB();
 
-    // 1) usuario
     const user = findById(db.users, userId);
     if (!user) return res.status(400).json({ error: 'Usuario del ticket no existe' });
 
-    // 2) agrupar items y validar
     const grouped = aggregateItemsById(productIds || []);
     if (!grouped.length) return res.status(400).json({ error: 'No hay productos en el ticket' });
 
-    // 3) construir items y validar stock
     const items = [];
     for (const { productId, qty } of grouped) {
       const prod = findById(db.products, productId);
@@ -501,13 +542,13 @@ app.post('/api/tickets', (req, res) => {
       });
     }
 
-    // 4) descontar stock
+    // Descontar stock
     for (const it of items) {
       const idx = db.products.findIndex(p => p.id === it.productId);
       db.products[idx].stock = Math.max(0, (db.products[idx].stock || 0) - it.qty);
+      db.products[idx].updatedAt = nowISO();
     }
 
-    // 5) total
     const subtotal = items.reduce((s, x) => s + x.lineTotal, 0);
     const total = subtotal;
 
@@ -535,13 +576,9 @@ app.post('/api/tickets', (req, res) => {
     res.status(500).json({ error: 'No se pudo crear ticket' });
   }
 });
-
-// GET /api/tickets – listado
 app.get('/api/tickets', (_req, res) => {
   try { res.json(readDB().tickets); } catch { res.status(500).json({ error: 'Error' }); }
 });
-
-// GET /api/tickets/:id – leer ticket
 app.get('/api/tickets/:id', (req, res) => {
   try {
     const db = readDB();
@@ -552,8 +589,6 @@ app.get('/api/tickets/:id', (req, res) => {
     res.status(500).json({ error: 'Error' });
   }
 });
-
-// PUT /api/tickets/:id – actualizar
 app.put('/api/tickets/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -569,8 +604,6 @@ app.put('/api/tickets/:id', (req, res) => {
     res.status(500).json({ error: 'No se pudo actualizar ticket' });
   }
 });
-
-// DELETE /api/tickets/:id – eliminar
 app.delete('/api/tickets/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -584,8 +617,6 @@ app.delete('/api/tickets/:id', (req, res) => {
     res.status(500).json({ error: 'No se pudo eliminar ticket' });
   }
 });
-
-// GET /api/tickets/:id/pdf – generar PDF on-the-fly
 app.get('/api/tickets/:id/pdf', (req, res) => {
   try {
     const db = readDB();
@@ -608,11 +639,9 @@ app.get('/api/tickets/:id/pdf', (req, res) => {
     if (person) doc.text(`Cliente: ${person.name} (${person.email})`);
     doc.moveDown();
 
-    // Tabla simple
+    // Encabezado tabla
     doc.fontSize(12).text(`Items:`);
     doc.moveDown(0.2);
-
-    // Encabezados
     doc.font('Helvetica-Bold').text('Producto', { continued: true, width: 240 });
     doc.text('Cant.', { continued: true, width: 60, align: 'right' });
     doc.text('Precio', { continued: true, width: 80, align: 'right' });
@@ -643,11 +672,22 @@ app.get('/api/tickets/:id/pdf', (req, res) => {
 });
 
 /* =========================
-   Levantar servidor
+   SPA fallback (por si usas History API)
+========================= */
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  const idx = path.join(publicDir, 'index.html');
+  if (fs.existsSync(idx)) return res.sendFile(idx);
+  next();
+});
+
+/* =========================
+   Iniciar servidor
 ========================= */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   ensureDB();
-  console.log(`✅ Servidor listo en :${PORT}`);
+  console.log(`✅ Servidor listo en http://localhost:${PORT}`);
   console.log(`📄 DB: ${DB_FILE}`);
+  console.log(`🌐 CORS orígenes:`, ALLOWED);
 });

@@ -1,8 +1,21 @@
 // Code/Acceso.Script.ts — TypeScript (ESM) — Login vía backend (/api/login)
 
-declare global { interface Window { bootstrap?: any; } }
-const API_BASE = (window as any).__API_BASE__ || 'shopd-d-production.up.railway.app';
+declare global { interface Window { bootstrap?: any; __API_BASE__?: string; } }
+
 type ToastType = "success" | "danger" | "warning" | "info";
+
+/** Normaliza el base de la API:
+ * - Si no se define, usa el origin actual (http://localhost:3000 en local).
+ * - Si viene sin protocolo (ej: "shopd-d-production.up.railway.app"), antepone "https://".
+ */
+function normalizeBase(raw?: string): string {
+  const val = (raw ?? "").trim();
+  if (!val) return window.location.origin;
+  if (val.startsWith("http://") || val.startsWith("https://")) return val.replace(/\/+$/, "");
+  return `https://${val.replace(/\/+$/, "")}`;
+}
+
+const API_BASE = normalizeBase((window as any).__API_BASE__ || "shopd-d-production.up.railway.app");
 
 // -------- Toasts --------
 function ensureToastContainer(): HTMLDivElement {
@@ -16,6 +29,7 @@ function ensureToastContainer(): HTMLDivElement {
   }
   return c;
 }
+
 function showToast(msg: string, type: ToastType = "info") {
   const c = ensureToastContainer();
   const el = document.createElement("div");
@@ -70,22 +84,43 @@ export function mount({ container, signal }: { container: HTMLElement; signal: A
       // ---- LOGIN contra backend ----
       const resp = await fetch(`${API_BASE}/api/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ username: u, password: p }),
       });
 
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
-        showToast(err?.error || "Credenciales incorrectas.", "danger");
+        let msg = `HTTP ${resp.status}`;
+        try {
+          const ct = resp.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const err = await resp.json();
+            msg = err?.error || msg;
+          } else {
+            const txt = await resp.text();
+            if (txt) msg = txt;
+          }
+        } catch { /* noop */ }
+        showToast(msg || "Credenciales incorrectas.", "danger");
         return;
       }
 
-      const data: { user: { id: string; username: string; userPassword: string; personId: string; avatar?: string | null; role?: string; createdAt?: string }, person: { name?: string; email?: string } } = await resp.json();
+      const data: {
+        user: {
+          id: string;
+          username: string;
+          userPassword: string;
+          personId: string;
+          avatar?: string | null;
+          role?: string;
+          createdAt?: string;
+        },
+        person: { name?: string; email?: string }
+      } = await resp.json();
 
       // Guardar sesión en el cliente (como hace tu app.js / guards)
       sessionStorage.setItem('currentUserId', data.user.id);
 
-      // (Opcional) cachear datos mínimos para mostrar de inmediato en la navbar
+      // Cache mínimo para navbar
       sessionStorage.setItem('currentUserCache', JSON.stringify({
         id: data.user.id,
         username: data.user.username,
@@ -116,7 +151,7 @@ export function mount({ container, signal }: { container: HTMLElement; signal: A
     }
   };
 
-  // Puente compatible con EventListener (recibe Event y no retorna Promise)
+  // Listener sincrónico que llama al async
   form.addEventListener('submit', (ev: Event) => {
     void onSubmit(ev as SubmitEvent);
   }, { signal });

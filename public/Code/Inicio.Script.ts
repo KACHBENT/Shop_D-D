@@ -1,6 +1,5 @@
 // Code/Inicio.Script.ts — TypeScript (ESM)
 
-
 import { getCurrentUser } from './Auth.Script.js';
 
 type Els = {
@@ -18,7 +17,7 @@ const DEFAULT_AVATAR = '../Image/Icons/users.svg';
 function formatDateISOToLong(iso?: string): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  return isNaN(d.getTime())
+  return Number.isNaN(d.getTime())
     ? '—'
     : d.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
 }
@@ -31,7 +30,7 @@ function pickEls(container: HTMLElement): Els {
     username2: container.querySelector<HTMLElement>('#profile-username-2'),
     email: container.querySelector<HTMLElement>('#profile-email'),
     created: container.querySelector<HTMLElement>('#profile-createdAt'),
-    role: container.querySelector<HTMLElement>('#profile-role'), // opcional en tu HTML
+    role: container.querySelector<HTMLElement>('#profile-role'),
   };
 }
 
@@ -47,29 +46,28 @@ function renderEmpty(els: Els) {
 
 async function render(els: Els) {
   try {
-    const me = await getCurrentUser(); 
-    if (!me) {
-      renderEmpty(els);
-      return;
-    }
+    const me = await getCurrentUser();
+    if (!me) { renderEmpty(els); return; }
+
     const { user, person } = me;
 
-    if (els.avatar) { els.avatar.src = user.avatar || DEFAULT_AVATAR; els.avatar.alt = user.username; }
-    if (els.name) els.name.textContent = person.name || user.username;
-    if (els.username1) els.username1.textContent = user.username;
-    if (els.username2) els.username2.textContent = user.username;
-    if (els.email) els.email.textContent = person.email || '—';
+    if (els.avatar) {
+      els.avatar.src = user.avatar || DEFAULT_AVATAR;
+      els.avatar.alt = user.username || 'usuario';
+    }
+    if (els.name) els.name.textContent = person?.name || user.username || '—';
+    if (els.username1) els.username1.textContent = user.username || '—';
+    if (els.username2) els.username2.textContent = user.username || '—';
+    if (els.email) els.email.textContent = person?.email || '—';
     if (els.created) els.created.textContent = formatDateISOToLong(user.createdAt);
     if (els.role) els.role.textContent = (user.role || 'cliente').toUpperCase();
   } catch {
-
     renderEmpty(els);
   }
 }
 
 export function mount({ container, signal }: { container: HTMLElement; signal: AbortSignal }) {
   const els = pickEls(container);
-
   void render(els);
 
   const onUpdated = () => { void render(els); };
@@ -77,5 +75,5 @@ export function mount({ container, signal }: { container: HTMLElement; signal: A
 }
 
 export function unmount() {
-
+  // no-op: los listeners se limpian con AbortSignal
 }
